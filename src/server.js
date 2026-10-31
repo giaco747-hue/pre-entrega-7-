@@ -1,6 +1,10 @@
 import app from './app.js';
-import config from './config/env.config.js';
+import { connectDB } from './config/env.config.js'; // conexión importada mongodb
 
-app.listen(config.port, () => {
-    console.log(`Servidor escuchando en el puerto ${config.port}`);
+const PORT = process.env.PORT || 8080;
+
+connectDB(); 
+
+app.listen(PORT, () => {
+    console.log(`🚀 Servidor escuchando en el puerto ${PORT}`);
 });

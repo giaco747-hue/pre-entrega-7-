@@ -1,6 +1,14 @@
+import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
-export default {
-    port: process.env.PORT || 8080
+export const connectDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log('✅ Conexión a MongoDB establecida con éxito');
+    } catch (error) {
+        console.error('❌ Error al conectar a MongoDB:', error.message);
+        process.exit(1);
+    }
 };

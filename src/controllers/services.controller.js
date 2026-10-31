@@ -14,7 +14,7 @@ export const getServices = async (req, res) => {
 
 export const getServiceById = async (req, res) => {
     try {
-        const id = parseInt(req.params.sid);
+        const id = req.params.sid;
         const service = await servicesService.getServiceById(id);
         
         if (!service) {
@@ -45,7 +45,7 @@ export const createService = async (req, res) => {
 
 export const updateService = async (req, res) => {
     try {
-        const id = parseInt(req.params.sid);
+        const id = req.params.sid;
         const updatedService = await servicesService.updateService(id, req.body);
         
         if (!updatedService) {
@@ -59,7 +59,7 @@ export const updateService = async (req, res) => {
 
 export const deleteService = async (req, res) => {
     try {
-        const id = parseInt(req.params.sid);
+        const id = req.params.sid;
         const deletedService = await servicesService.deleteService(id);
         
         if (!deletedService) {

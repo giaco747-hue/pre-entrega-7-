@@ -18,7 +18,7 @@ export const createBooking = async (req, res) => {
 
 export const getBookingById = async (req, res) => {
     try {
-        const id = parseInt(req.params.bid);
+        const id = req.params.bid;
         const booking = await bookingsService.getBookingById(id);
         
         if (!booking) {
@@ -32,8 +32,8 @@ export const getBookingById = async (req, res) => {
 
 export const addServiceToBooking = async (req, res) => {
     try {
-        const bookingId = parseInt(req.params.bid);
-        const serviceId = parseInt(req.params.sid);
+       const bookingId = req.params.bid;
+        const serviceId = req.params.sid;
 
         const updatedBooking = await bookingsService.addServiceToBooking(bookingId, serviceId);
         res.status(200).json(updatedBooking);

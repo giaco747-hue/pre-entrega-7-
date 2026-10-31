@@ -1,75 +1,72 @@
-# Sistema Backend de Turnos y Reservas - Pre-entrega 5
+# Proyecto Backend - API RESTful (Pre-entrega 6)
 
-Este repositorio contiene la quinta pre-entrega del proyecto, enfocada en la implementación de una **Arquitectura en Capas estricta, incorporando DAO (Data Access Object) y Repository**. 
+Este repositorio contiene la arquitectura backend para una plataforma de servicios, desarrollada con **Node.js, Express y MongoDB**. En esta sexta entrega, la capa de persistencia ha sido migrada completamente de almacenamiento local basado en archivos (`fs`) a una base de datos NoSQL.
 
-El objetivo principal de esta refactorización es desacoplar la lógica de negocio de la persistencia de datos, preparando el sistema para su inminente migración desde archivos locales JSON hacia MongoDB Atlas en la siguiente etapa del curso.
+## 🚀 Novedades en esta versión (Migración a MongoDB)
 
-## 🏗️ Arquitectura y Flujo de Datos
+*   **Eliminación del módulo `fs`:** Se abandonó el uso de los archivos `services.json` y `bookings.json` como sistema de almacenamiento.
+*   **Implementación de Mongoose:** Se crearon los esquemas y modelos (`service.model.js` y `booking.model.js`) para gestionar las colecciones directamente en la base de datos.
+*   **Refactorización de la capa DAO:** Los archivos `services.dao.js` y `bookings.dao.js` fueron reescritos para ejecutar consultas a MongoDB mediante métodos nativos de Mongoose (`find`, `findById`, `create`, `findByIdAndUpdate`, `findByIdAndDelete`).
+*   **Gestión de `ObjectId`:** Se eliminaron las conversiones numéricas (`parseInt()`) en la capa de controladores para permitir la validación y lectura correcta de los IDs alfanuméricos generados automáticamente por MongoDB.
+*   **Conexión Local (MongoDB Compass):** La arquitectura está configurada de manera segura para conectarse a una instancia local de MongoDB, garantizando un entorno de desarrollo aislado y evitando bloqueos de red o problemas de DNS.
 
-El proyecto ha sido rediseñado estableciendo un flujo de datos unidireccional: 
-`Router -> Controller -> Service -> Repository -> DAO -> File System (JSON)`
+## 🛠️ Tecnologías Utilizadas
 
-Cada capa tiene una única responsabilidad y se comunica estrictamente con la capa adyacente inferior:
+*   **Node.js** y **Express** (Entorno y Framework del servidor)
+*   **MongoDB** y **Mongoose** (Motor de base de datos y Object Data Modeling)
+*   **JavaScript (ES6+)** (Uso de ES Modules `import/export`)
 
-1. **Rutas (`/routes`)**: Definen los endpoints de la API REST y delegan la petición al controlador correspondiente. No contienen lógica.
-2. **Controladores (`/controllers`)**: Única capa autorizada para interactuar con los objetos HTTP (`req` y `res`). Extraen los parámetros, el cuerpo de la petición, invocan a la capa de servicios y formatean las respuestas.
-3. **Servicios (`/services`)**: El corazón de la aplicación. Contienen todas las **reglas de negocio**. Esta capa es completamente agnóstica al protocolo HTTP y a la tecnología de base de datos.
-4. **Repositorios (`/repositories`)**: Actúan como una fachada de persistencia. Ofrecen métodos genéricos de acceso a datos aislando a los servicios de la implementación técnica de la base de datos (actualmente el DAO de archivos).
-5. **DAO (`/dao`)**: Única capa encargada de interactuar físicamente con los datos. Utiliza el módulo nativo `fs/promises` de Node.js para leer y escribir directamente en los archivos `.json`. No posee ninguna regla de negocio.
+## 📁 Arquitectura del Proyecto
 
-## 📂 Estructura del Proyecto
+El código sigue un patrón de diseño estructurado en capas para asegurar la escalabilidad y separar responsabilidades:
 
-```text
-src/
-  ├── config/
-  │   └── env.config.js
-  ├── controllers/
-  │   ├── bookings.controller.js
-  │   └── services.controller.js
-  ├── dao/
-  │   ├── bookings.dao.js
-  │   └── services.dao.js
-  ├── data/
-  │   ├── bookings.json
-  │   └── services.json
-  ├── repositories/
-  │   ├── bookings.repository.js
-  │   └── services.repository.js
-  ├── routes/
-  │   ├── bookings.router.js
-  │   └── services.router.js
-  ├── services/
-  │   ├── bookings.service.js
-  │   └── services.service.js
-  ├── app.js
-  └── server.js
+*   `/src/models`: Definición de los esquemas y reglas de datos de Mongoose.
+*   `/src/dao`: Data Access Object. Administra exclusivamente las consultas de lectura y escritura a MongoDB.
+*   `/src/services`: Contiene la lógica de negocio y validaciones.
+*   `/src/controllers`: Encargada de procesar las peticiones (req/res) y orquestar las respuestas del servidor.
+*   `/src/routes`: Definición de los endpoints de la API.
 
-  🧠 Reglas de Negocio Destacadas
-Gestión de Reservas (bookings.service.js): Al ejecutar el endpoint para agregar un servicio a una reserva existente, el sistema verifica si el servicio ya fue añadido previamente. De ser así, en lugar de duplicar el registro, incrementa automáticamente la propiedad quantity. Esta lógica fue aislada exitosamente en la capa de Servicios, manteniendo el DAO limpio.
+## ⚙️ Requisitos Previos
 
-🚀 Endpoints Disponibles
-La API mantiene su contrato de interfaz intacto. Todos los endpoints responden en formato JSON.
+*   [Node.js](https://nodejs.org/) instalado.
+*   [MongoDB Compass](https://www.mongodb.com/products/compass) o un servicio de MongoDB Community Server ejecutándose localmente en el puerto `27017`.
 
-Módulo de Servicios (Services)
-GET /api/services - Obtiene todos los servicios disponibles (soporta filtros por query).
+## 🚀 Instalación y Ejecución
 
-GET /api/services/:sid - Obtiene el detalle de un servicio específico.
+1. Clonar este repositorio en tu máquina local:
+   ```bash
+   git clone <URL_DEL_REPOSITORIO>
+   cd <NOMBRE_DE_LA_CARPETA>
+Instalar todas las dependencias de Node:
 
-POST /api/services - Crea un nuevo servicio.
+Bash
+npm install
+Configurar las variables de entorno. Crea un archivo .env en la raíz del proyecto y agrega lo siguiente:
 
-PUT /api/services/:sid - Modifica un servicio existente.
+Fragmento de código
+PORT=8080
+MONGO_URI=mongodb://localhost:27017/coderhouse
+Ejecutar el servidor en modo desarrollo:
+
+Bash
+npm run dev
+📡 Endpoints Principales
+Servicios (/api/services)
+GET /api/services - Obtiene la lista de todos los servicios disponibles.
+
+GET /api/services/:sid - Obtiene los detalles de un servicio específico por su ID.
+
+POST /api/services - Crea un nuevo servicio en la base de datos.
+
+PUT /api/services/:sid - Actualiza los datos de un servicio existente.
 
 DELETE /api/services/:sid - Elimina un servicio del sistema.
 
-Módulo de Reservas (Bookings)
-POST /api/bookings - Registra una nueva reserva (cliente y fecha).
+Reservas (/api/bookings)
+GET /api/bookings/:bid - Obtiene una reserva por su ID (incluye la población de los datos del servicio a través de Mongoose .populate()).
 
-GET /api/bookings/:bid - Obtiene el detalle de una reserva específica.
+POST /api/bookings - Crea una nueva reserva.
 
-POST /api/bookings/:bid/services/:sid - Añade un servicio a una reserva o incrementa su cantidad.
+POST /api/bookings/:bid/services/:sid - Agrega un servicio específico a una reserva existente.
 
-🛠️ Instalación y Ejecución
-Clonar el repositorio.
-
-Instalar las dependencias del proyecto:
-
+ ****** Desarrollado por Rodrigo para el curso de Backend de Coderhouse. *********
