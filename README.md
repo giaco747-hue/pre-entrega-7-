@@ -1,72 +1,68 @@
-# Proyecto Backend - API RESTful (Pre-entrega 6)
+Markdown
+# Sistema Backend de Turnos y Reservas
 
-Este repositorio contiene la arquitectura backend para una plataforma de servicios, desarrollada con **Node.js, Express y MongoDB**. En esta sexta entrega, la capa de persistencia ha sido migrada completamente de almacenamiento local basado en archivos (`fs`) a una base de datos NoSQL.
+Este proyecto es el backend para un sistema de gestión de turnos y reservas, desarrollado con Node.js, Express y MongoDB. Está estructurado bajo una estricta arquitectura en capas para separar la lógica de enrutamiento, controladores, servicios y persistencia de datos.
 
-## 🚀 Novedades en esta versión (Migración a MongoDB)
+## 🚀 Tecnologías Utilizadas
 
-*   **Eliminación del módulo `fs`:** Se abandonó el uso de los archivos `services.json` y `bookings.json` como sistema de almacenamiento.
-*   **Implementación de Mongoose:** Se crearon los esquemas y modelos (`service.model.js` y `booking.model.js`) para gestionar las colecciones directamente en la base de datos.
-*   **Refactorización de la capa DAO:** Los archivos `services.dao.js` y `bookings.dao.js` fueron reescritos para ejecutar consultas a MongoDB mediante métodos nativos de Mongoose (`find`, `findById`, `create`, `findByIdAndUpdate`, `findByIdAndDelete`).
-*   **Gestión de `ObjectId`:** Se eliminaron las conversiones numéricas (`parseInt()`) en la capa de controladores para permitir la validación y lectura correcta de los IDs alfanuméricos generados automáticamente por MongoDB.
-*   **Conexión Local (MongoDB Compass):** La arquitectura está configurada de manera segura para conectarse a una instancia local de MongoDB, garantizando un entorno de desarrollo aislado y evitando bloqueos de red o problemas de DNS.
+* **Backend:** Node.js, Express
+* **Base de Datos:** MongoDB (Mongoose)
+* **Motor de Vistas:** Handlebars (`express-handlebars`)
+* **Tiempo Real:** Socket.io
+* **Arquitectura:** Capas (Routes ➔ Controllers ➔ Services ➔ DAOs ➔ Models)
 
-## 🛠️ Tecnologías Utilizadas
+## 🎯 Novedades en esta Pre-entrega (Vistas y WebSockets)
 
-*   **Node.js** y **Express** (Entorno y Framework del servidor)
-*   **MongoDB** y **Mongoose** (Motor de base de datos y Object Data Modeling)
-*   **JavaScript (ES6+)** (Uso de ES Modules `import/export`)
+En esta fase se incorporó una capa visual del lado del servidor y comunicación bidireccional en tiempo real, manteniendo intacta la API REST existente:
 
-## 📁 Arquitectura del Proyecto
+1. **Vistas Renderizadas (Handlebars):**
+   * **`GET /views/services`**: Renderiza el listado completo de servicios extraídos directamente de MongoDB, mostrando nombre, descripción, duración, precio, categoría y disponibilidad.
+   * **`GET /views/availability`**: Renderiza la vista de reservas/disponibilidad con datos reales de la base de datos.
+   * *Regla de negocio cumplida: Ningún dato está hardcodeado. Toda la información servida al motor de plantillas atraviesa los mismos servicios de la arquitectura de la API.*
 
-El código sigue un patrón de diseño estructurado en capas para asegurar la escalabilidad y separar responsabilidades:
+2. **Comunicación en Tiempo Real (Socket.io):**
+   * El servidor cuenta con un canal de WebSockets activo.
+   * Al ejecutar una acción de creación de servicio vía API (`POST /api/services`), el controlador persiste el dato e inmediatamente emite un evento `updateServices` por medio de Socket.io.
+   * El script del cliente (`public/js/socket.js`) escucha este evento y actualiza el DOM dinámicamente. El resultado es que **la vista `/views/services` se actualiza instantáneamente en el navegador sin recargar la página**.
 
-*   `/src/models`: Definición de los esquemas y reglas de datos de Mongoose.
-*   `/src/dao`: Data Access Object. Administra exclusivamente las consultas de lectura y escritura a MongoDB.
-*   `/src/services`: Contiene la lógica de negocio y validaciones.
-*   `/src/controllers`: Encargada de procesar las peticiones (req/res) y orquestar las respuestas del servidor.
-*   `/src/routes`: Definición de los endpoints de la API.
+## 💻 Instalación y Ejecución
 
-## ⚙️ Requisitos Previos
-
-*   [Node.js](https://nodejs.org/) instalado.
-*   [MongoDB Compass](https://www.mongodb.com/products/compass) o un servicio de MongoDB Community Server ejecutándose localmente en el puerto `27017`.
-
-## 🚀 Instalación y Ejecución
-
-1. Clonar este repositorio en tu máquina local:
+1. Clonar el repositorio.
+2. Instalar las dependencias:
    ```bash
-   git clone <URL_DEL_REPOSITORIO>
-   cd <NOMBRE_DE_LA_CARPETA>
-Instalar todas las dependencias de Node:
+   npm install
+Configurar las variables de entorno creando un archivo .env en la raíz (asegurar conexión a MongoDB y configuración del PORT).
 
-Bash
-npm install
-Configurar las variables de entorno. Crea un archivo .env en la raíz del proyecto y agrega lo siguiente:
-
-Fragmento de código
-PORT=8080
-MONGO_URI=mongodb://localhost:27017/coderhouse
-Ejecutar el servidor en modo desarrollo:
+Iniciar el servidor en modo desarrollo:
 
 Bash
 npm run dev
-📡 Endpoints Principales
-Servicios (/api/services)
-GET /api/services - Obtiene la lista de todos los servicios disponibles.
+🗂️ Endpoints Principales
+Vistas HTML
+*GET /views/services - Listado interactivo de servicios.
 
-GET /api/services/:sid - Obtiene los detalles de un servicio específico por su ID.
+*GET /views/availability - Listado de reservas.
 
-POST /api/services - Crea un nuevo servicio en la base de datos.
+*API REST
+*GET /api/services - Obtiene los servicios (soporta query params).
 
-PUT /api/services/:sid - Actualiza los datos de un servicio existente.
+*POST /api/services - Crea un servicio y emite actualización por WebSockets.
 
-DELETE /api/services/:sid - Elimina un servicio del sistema.
+*GET /api/services/:sid - Obtiene un servicio por ID.
 
-Reservas (/api/bookings)
-GET /api/bookings/:bid - Obtiene una reserva por su ID (incluye la población de los datos del servicio a través de Mongoose .populate()).
+*PUT /api/services/:sid - Actualiza un servicio.
 
-POST /api/bookings - Crea una nueva reserva.
+*DELETE /api/services/:sid - Elimina un servicio.
 
-POST /api/bookings/:bid/services/:sid - Agrega un servicio específico a una reserva existente.
 
- ****** Desarrollado por Rodrigo para el curso de Backend de Coderhouse. *********
+3. Guarda el archivo con `Ctrl + S`.
+4. Ahora sí, abre la terminal y ejecuta la secuencia para subir todo:
+
+```bash
+git add .
+git commit -m "Agrega vistas Handlebars, Socket.io y actualiza README"
+git push origin main
+
+        
+        
+         **** Proyecto creado por Rodrigo Navas Giacometto para Coderhouse *********

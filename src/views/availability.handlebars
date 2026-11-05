@@ -1,0 +1,11 @@
+<h1>Disponibilidad y Reservas</h1>
+
+<ul id="bookings-list">
+    {{#each bookings}}
+    <li>
+        <strong>Reserva ID:</strong> {{this._id}} <br>
+        <strong>Fecha:</strong> {{this.date}} | <strong>Hora:</strong> {{this.time}} <br>
+        <strong>Cliente:</strong> {{this.client}}
+    </li>
+    {{/each}}
+</ul>

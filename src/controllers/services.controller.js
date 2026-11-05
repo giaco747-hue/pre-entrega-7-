@@ -1,4 +1,5 @@
 import ServicesService from '../services/services.service.js';
+import { io } from '../server.js'; // <-- Importamos socket.io
 
 const servicesService = new ServicesService();
 
@@ -37,6 +38,13 @@ export const createService = async (req, res) => {
         }
         
         const createdService = await servicesService.createService(req.body);
+        
+        // --- NUEVO CÓDIGO PARA SOCKET.IO ---
+        // Obtenemos la lista actualizada y la enviamos a todos los navegadores conectados
+        const updatedServices = await servicesService.getServices({}); 
+        io.emit('updateServices', updatedServices);
+        // -----------------------------------
+
         res.status(201).json(createdService);
     } catch (error) {
         res.status(500).json({ error: 'Error al crear el servicio' });

@@ -1,0 +1,12 @@
+<h1>Listado de Servicios</h1>
+
+<ul id="services-list">
+    {{#each services}}
+    <li>
+        <strong>{{this.name}}</strong> ({{this.category}}) <br>
+        Descripción: {{this.description}} <br>
+        Duración: {{this.duration}} min | Precio: ${{this.price}} <br>
+        Disponibilidad: {{this.availability}}
+    </li>
+    {{/each}}
+</ul>
