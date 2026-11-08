@@ -20,6 +20,8 @@ socket.on('updateServices', (services) => {
                 Disponibilidad: ${service.availability}
             `;
             servicesList.appendChild(li);
+            // Emitimos un evento hacia el servidor
+socket.emit('client_ready', { message: 'El cliente está listo y escuchando el DOM' });
         });
     }
 });

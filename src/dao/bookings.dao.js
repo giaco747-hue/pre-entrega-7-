@@ -1,6 +1,9 @@
 import { BookingModel } from '../models/booking.model.js';
 
 export default class BookingsDao {
+    async getBookings(query = {}) {
+        return await BookingModel.find(query);
+    }
     async create(bookingData) {
         return await BookingModel.create(bookingData);
     }

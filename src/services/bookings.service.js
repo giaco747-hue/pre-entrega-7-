@@ -5,6 +5,9 @@ const bookingsRepository = new BookingsRepository();
 const servicesRepository = new ServicesRepository();
 
 export default class BookingsService {
+    async getBookings(query = {}) {
+        return await bookingsRepository.getBookings(query);
+    }
     async createBooking(bookingData) {
         return await bookingsRepository.create(bookingData);
     }

@@ -13,8 +13,13 @@ const httpServer = app.listen(PORT, () => {
 
 // Le pasamos ese servidor a Socket.io
 export const io = new Server(httpServer);
+app.set('socketio', io);
 
-// Escuchamos cuando un cliente (el navegador) se conecte
 io.on('connection', (socket) => {
     console.log('🟢 Nuevo cliente conectado por Socket.io:', socket.id);
+
+    // Escuchamos el evento que emitirá el navegador
+    socket.on('client_ready', (data) => {
+        console.log('Mensaje del cliente:', data.message);
+    });
 });

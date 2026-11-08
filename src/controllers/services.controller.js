@@ -1,5 +1,5 @@
 import ServicesService from '../services/services.service.js';
-import { io } from '../server.js'; // <-- Importamos socket.io
+
 
 const servicesService = new ServicesService();
 
@@ -41,8 +41,9 @@ export const createService = async (req, res) => {
         
         // --- NUEVO CÓDIGO PARA SOCKET.IO ---
         // Obtenemos la lista actualizada y la enviamos a todos los navegadores conectados
-        const updatedServices = await servicesService.getServices({}); 
-        io.emit('updateServices', updatedServices);
+      const io = req.app.get('socketio');
+const updatedServices = await servicesService.getServices({}); 
+io.emit('updateServices', updatedServices);
         // -----------------------------------
 
         res.status(201).json(createdService);
@@ -59,6 +60,9 @@ export const updateService = async (req, res) => {
         if (!updatedService) {
             return res.status(404).json({ error: 'Servicio no encontrado' });
         }
+        const io = req.app.get('socketio');
+    const updatedServices = await servicesService.getServices({}); 
+    io.emit('updateServices', updatedServices);
         res.status(200).json(updatedService);
     } catch (error) {
         res.status(500).json({ error: 'Error al actualizar el servicio' });
@@ -73,6 +77,9 @@ export const deleteService = async (req, res) => {
         if (!deletedService) {
             return res.status(404).json({ error: 'Servicio no encontrado' });
         }
+        const io = req.app.get('socketio');
+    const updatedServices = await servicesService.getServices({}); 
+    io.emit('updateServices', updatedServices);
         res.status(200).json({ message: 'Servicio eliminado correctamente', service: deletedService });
     } catch (error) {
         res.status(500).json({ error: 'Error al eliminar el servicio' });
