@@ -2,17 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Turnos y Reservas</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <title>Sistema de Reservas</title>
 </head>
 <body>
-    
-    <main>
-        {{{body}}}
-    </main>
+    {{> navbar}}
 
-    <!-- Scripts de Socket.io y tu script personalizado -->
+    {{{body}}}
+
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/socket.js"></script>
 </body>

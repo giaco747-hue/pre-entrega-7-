@@ -1,27 +1,31 @@
-// Nos conectamos al socket del servidor
+// 1. Nos conectamos al socket del servidor
 const socket = io();
 
-// Escuchamos el evento 'updateServices' que crearemos en el backend
+// 2. Escuchamos el evento 'updateServices' del backend
 socket.on('updateServices', (services) => {
-    // Buscamos la lista <ul> que está en nuestro services.handlebars
+    // Buscamos la etiqueta <ul> en el HTML
     const servicesList = document.getElementById('services-list');
-    
+
     if (servicesList) {
-        // Vaciamos la lista actual
+        // Vaciamos la lista actual en la pantalla
         servicesList.innerHTML = '';
-        
-        // Recorremos los servicios nuevos y los agregamos al HTML
+
+        // Iniciamos el ciclo: recorremos los servicios nuevos
         services.forEach(service => {
             const li = document.createElement('li');
+            
+            // Inyectamos los datos en el HTML
             li.innerHTML = `
                 <strong>${service.name}</strong> (${service.category}) <br>
                 Descripción: ${service.description} <br>
                 Duración: ${service.duration} min | Precio: $${service.price} <br>
-                Disponibilidad: ${service.availability}
+                Disponibilidad: ${service.available}
             `;
             servicesList.appendChild(li);
-            // Emitimos un evento hacia el servidor
-socket.emit('client_ready', { message: 'El cliente está listo y escuchando el DOM' });
         });
+        
     }
 });
+
+// 3. Emitimos el evento al servidor (AFUERA DEL CICLO, se envía una sola vez)
+socket.emit('client_ready', { message: 'El cliente está listo y escuchando el DOM' });

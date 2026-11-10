@@ -10,6 +10,13 @@ export const createBooking = async (req, res) => {
         }
         
         const newBooking = await bookingsService.createBooking(req.body);
+        
+        // --- INYECCIÓN DE SOCKET.IO: Avisar al frontend que hay una nueva reserva ---
+        const io = req.app.get('socketio');
+        const updatedBookings = await bookingsService.getBookings({});
+        io.emit('updateBookings', updatedBookings);
+        // --------------------------------------------------------------------------
+        
         res.status(201).json(newBooking);
     } catch (error) {
         res.status(500).json({ error: 'Error al crear la reserva' });
@@ -36,6 +43,13 @@ export const addServiceToBooking = async (req, res) => {
         const serviceId = req.params.sid;
 
         const updatedBooking = await bookingsService.addServiceToBooking(bookingId, serviceId);
+        
+        // --- INYECCIÓN DE SOCKET.IO: Avisar al frontend que la reserva cambió ---
+        const io = req.app.get('socketio');
+        const updatedBookings = await bookingsService.getBookings({});
+        io.emit('updateBookings', updatedBookings);
+        // ------------------------------------------------------------------------
+        
         res.status(200).json(updatedBooking);
         
     } catch (error) {
